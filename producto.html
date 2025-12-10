@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="es">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width,initial-scale=1" /><title>Producto · ArtesanosMX</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-800 text-gray-100">
+<nav class="bg-gray-800 bg-opacity-90 px-6 py-4">
+  <div class="max-w-6xl mx-auto flex justify-between items-center">
+    <h1 class="text-xl font-bold text-emerald-300">ArtesanosMX</h1>
+    <a href="index.html" class="text-sm text-gray-300 hover:text-emerald-300">Volver</a>
+  </div>
+</nav>
+
+<main class="max-w-4xl mx-auto p-6 mt-12 bg-gray-800 bg-opacity-90 rounded-2xl border border-gray-700 shadow-2xl">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <img id="prodImg" src="https://picsum.photos/seed/p1/800/600" class="w-full h-80 object-cover rounded-lg shadow" alt="producto">
+    <div>
+      <h2 id="prodTitle" class="text-3xl font-bold text-emerald-300">Producto</h2>
+      <p id="prodVendor" class="text-gray-300 mt-1">Artesano</p>
+      <p id="prodPrice" class="text-2xl font-extrabold text-emerald-400 mt-4">Rp 0</p>
+      <p id="prodDesc" class="text-gray-200 mt-4 leading-relaxed">Descripción...</p>
+
+      <div class="mt-6 flex items-center gap-4">
+        <input id="qty" type="number" min="1" value="1" class="w-20 px-3 py-2 rounded bg-gray-900 border border-gray-700 text-gray-100" />
+        <button id="addBtn" class="ml-auto bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-6 py-2 rounded-lg hover:scale-105 transition">Añadir al carrito</button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+const sample = { id:'p1', title:'Jarra de Barro', price:350, vendor:'Don Mauro', img:'https://picsum.photos/seed/p1/800/600', desc:'Jarra artesanal hecha a mano con técnica tradicional.' };
+document.getElementById('prodImg').src = sample.img;
+document.getElementById('prodTitle').textContent = sample.title;
+document.getElementById('prodVendor').textContent = sample.vendor;
+document.getElementById('prodPrice').textContent = 'Rp ' + sample.price;
+document.getElementById('prodDesc').textContent = sample.desc;
+
+document.getElementById('addBtn').onclick = ()=>{
+  const q = Math.max(1, Number(document.getElementById('qty').value||1));
+  const cart = JSON.parse(localStorage.getItem('cart_v1')||'{}');
+  if(cart[sample.id]) cart[sample.id].qty += q; else cart[sample.id] = { id: sample.id, title: sample.title, price: sample.price, qty: q };
+  localStorage.setItem('cart_v1', JSON.stringify(cart));
+  alert(`${q} x ${sample.title} añadido (sim)`); 
+};
+</script>
+</body>
+</html>

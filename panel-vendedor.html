@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Panel Vendedor</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-700 text-gray-100 p-8">
+
+  <h1 class="text-4xl font-extrabold mb-8 text-emerald-300 drop-shadow-lg">Panel del Vendedor</h1>
+
+  <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <!-- Card PERFIL -->
+    <div class="bg-gray-800/90 backdrop-blur-sm p-6 rounded-2xl border border-gray-700 shadow-xl">
+      <h3 class="font-bold text-xl">Mi Tienda</h3>
+
+      <div class="mt-4">
+        <p class="text-gray-400 text-sm">Nombre:</p>
+        <p id="storeName" class="font-semibold text-lg">Taller Demo</p>
+      </div>
+
+      <div class="mt-4">
+        <p class="text-gray-400 text-sm">Descripción:</p>
+        <p id="storeDesc" class="text-gray-300 text-sm">Artesanías hechas a mano.</p>
+      </div>
+
+      <button id="editStoreBtn" class="mt-6 w-full bg-emerald-600 py-2 px-3 rounded-lg text-white font-semibold hover:bg-emerald-500 transition">
+        ✏️ Editar perfil
+      </button>
+    </div>
+
+
+    <!-- Card PRODUCTOS -->
+    <div class="lg:col-span-2 bg-gray-800/90 backdrop-blur-sm p-6 rounded-2xl border border-gray-700 shadow-xl">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="font-bold text-xl">Mis Productos</h3>
+        <button id="addProductBtn" class="bg-emerald-500 py-2 px-4 rounded-lg text-white font-semibold hover:bg-emerald-400 transition">
+          ➕ Nuevo producto
+        </button>
+      </div>
+
+      <div id="prodList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    </div>
+  </div>
+
+
+<!-- MODAL EDITAR PERFIL -->
+<div id="modalProfile" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+  <div class="bg-gray-800 p-6 rounded-xl w-full max-w-md border border-gray-700 shadow-xl">
+
+    <h2 class="text-xl font-bold mb-4">Editar Perfil</h2>
+
+    <label class="text-sm text-gray-300">Nombre de la tienda</label>
+    <input id="inpStoreName" class="w-full p-2 rounded bg-gray-700 mt-1 mb-3" />
+
+    <label class="text-sm text-gray-300">Descripción</label>
+    <textarea id="inpStoreDesc" class="w-full p-2 rounded bg-gray-700 mt-1 mb-3"></textarea>
+
+    <div class="flex justify-end gap-3">
+      <button class="px-4 py-2 bg-gray-600 rounded hover:bg-gray-500" onclick="closeProfileModal()">Cancelar</button>
+      <button class="px-4 py-2 bg-emerald-600 rounded hover:bg-emerald-500" onclick="saveProfile()">Guardar</button>
+    </div>
+
+  </div>
+</div>
+
+
+<!-- MODAL NUEVO PRODUCTO -->
+<div id="modalProduct" class="hidden fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+  <div class="bg-gray-800 p-6 rounded-xl w-full max-w-md border border-gray-700 shadow-xl">
+
+    <h2 class="text-xl font-bold mb-4">Agregar Producto</h2>
+
+    <label class="text-sm text-gray-300">Nombre</label>
+    <input id="pTitle" class="w-full p-2 rounded bg-gray-700 mt-1 mb-3">
+
+    <label class="text-sm text-gray-300">Precio</label>
+    <input id="pPrice" type="number" class="w-full p-2 rounded bg-gray-700 mt-1 mb-3">
+
+    <label class="text-sm text-gray-300">Descripción</label>
+    <textarea id="pDesc" class="w-full p-2 rounded bg-gray-700 mt-1 mb-3"></textarea>
+
+    <label class="text-sm text-gray-300">Imagen desde archivo</label>
+    <input id="pImg" type="file" accept="image/*" class="w-full p-2 rounded bg-gray-700 mt-1 mb-3">
+
+    <div class="flex justify-end gap-3">
+      <button class="px-4 py-2 bg-gray-600 rounded hover:bg-gray-500" onclick="closeProductModal()">Cancelar</button>
+      <button class="px-4 py-2 bg-emerald-500 rounded hover:bg-emerald-400" onclick="saveProduct()">Guardar</button>
+    </div>
+
+  </div>
+</div>
+
+
+
+<script>
+/* -------------------------
+   PERFIL DEL VENDEDOR
+------------------------- */
+let store = JSON.parse(localStorage.getItem("seller_profile") || `{
+  "name": "Taller Demo",
+  "desc": "Artesanías hechas a mano"
+}`);
+
+document.getElementById("storeName").textContent = store.name;
+document.getElementById("storeDesc").textContent = store.desc;
+
+document.getElementById("editStoreBtn").onclick = () => {
+  document.getElementById("inpStoreName").value = store.name;
+  document.getElementById("inpStoreDesc").value = store.desc;
+  document.getElementById("modalProfile").classList.remove("hidden");
+};
+
+function closeProfileModal() {
+  document.getElementById("modalProfile").classList.add("hidden");
+}
+
+function saveProfile() {
+  store.name = document.getElementById("inpStoreName").value;
+  store.desc = document.getElementById("inpStoreDesc").value;
+
+  localStorage.setItem("seller_profile", JSON.stringify(store));
+
+  document.getElementById("storeName").textContent = store.name;
+  document.getElementById("storeDesc").textContent = store.desc;
+
+  closeProfileModal();
+}
+
+
+
+/* -------------------------
+   PRODUCTOS INICIALES
+------------------------- */
+let products = JSON.parse(localStorage.getItem("seller_products"));
+
+if (!products) {
+  products = [
+    { id: "p1", title: "Producto 1", price: 120, desc: "Demo", img: "/img/bolsatejida.jpg" },
+    { id: "p2", title: "Producto 2", price: 200, desc: "Demo", img: "/img/jarrabarro.jpg" }
+  ];
+  localStorage.setItem("seller_products", JSON.stringify(products));
+}
+
+
+
+/* -------------------------
+   RENDER DE PRODUCTOS
+------------------------- */
+function renderProducts() {
+  const cont = document.getElementById("prodList");
+  cont.innerHTML = "";
+
+  products.forEach(p => {
+    const card = document.createElement("div");
+    card.className = "bg-gray-900 p-4 rounded-xl border border-gray-700 shadow";
+
+    const image = p.img ? p.img : "https://via.placeholder.com/400x300?text=Sin+imagen";
+
+    card.innerHTML = `
+      <img src="${image}" class="rounded-lg w-full h-40 object-cover mb-3">
+
+      <h4 class="font-bold text-lg">${p.title}</h4>
+      <p class="text-emerald-400 font-semibold">$${p.price}</p>
+      <p class="text-sm text-gray-400 mt-1">${p.desc}</p>
+
+      <div class="flex gap-3 mt-4">
+        <button class="flex-1 py-1 bg-gray-700 rounded hover:bg-gray-600"
+                onclick="openEditImage('${p.id}')">Cambiar imagen</button>
+
+        <button class="flex-1 py-1 bg-red-600 rounded hover:bg-red-500"
+                onclick="deleteProduct('${p.id}')">Eliminar</button>
+      </div>
+    `;
+
+    cont.appendChild(card);
+  });
+}
+
+renderProducts();
+
+
+
+/* ------------------------------------------
+   AGREGAR PRODUCTO + IMAGEN DESDE ARCHIVO
+------------------------------------------- */
+
+document.getElementById("addProductBtn").onclick = () => {
+  document.getElementById("modalProduct").classList.remove("hidden");
+};
+
+function closeProductModal() {
+  document.getElementById("modalProduct").classList.add("hidden");
+}
+
+function saveProduct() {
+  const file = document.getElementById("pImg").files[0];
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      pushProduct(reader.result);
+    };
+    reader.readAsDataURL(file);
+  } else {
+    pushProduct(""); // sin imagen
+  }
+}
+
+function pushProduct(imageBase64) {
+  const newP = {
+    id: "p" + (products.length + 1),
+    title: document.getElementById("pTitle").value,
+    price: document.getElementById("pPrice").value,
+    desc: document.getElementById("pDesc").value,
+    img: imageBase64
+  };
+
+  products.push(newP);
+  localStorage.setItem("seller_products", JSON.stringify(products));
+
+  renderProducts();
+  closeProductModal();
+}
+
+
+/* -------------------------
+   CAMBIAR IMAGEN A PRODUCTO
+------------------------- */
+function openEditImage(id) {
+  const input = document.createElement("input");
+  input.type = "file";
+  input.accept = "image/*";
+
+  input.onchange = () => {
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const product = products.find(p => p.id === id);
+      product.img = reader.result;
+
+      localStorage.setItem("seller_products", JSON.stringify(products));
+      renderProducts();
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  input.click();
+}
+
+
+/* -------------------------
+   ELIMINAR PRODUCTO
+------------------------- */
+function deleteProduct(id) {
+  products = products.filter(p => p.id !== id);
+  localStorage.setItem("seller_products", JSON.stringify(products));
+  renderProducts();
+}
+</script>
+
+</body>
+</html>

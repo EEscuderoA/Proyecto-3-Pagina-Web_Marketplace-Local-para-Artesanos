@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/><title>Mapa · Artesanos</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<style>#map{height:70vh}</style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-800 text-gray-100">
+  <div class="max-w-6xl mx-auto p-6">
+    <h1 class="text-4xl font-extrabold text-emerald-300 mb-4">🗺️ Artesanos Cercanos</h1>
+    <div class="bg-gray-800 bg-opacity-90 rounded-xl border border-gray-700 p-4">
+      <div id="map" class="rounded"></div>
+    </div>
+  </div>
+
+<script>
+const map = L.map('map').setView([19.4326, -99.1332], 12);
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+
+const sellers=[
+  {id:'m1',name:'Don Mauro',lat:19.4326,lng:-99.1332,cat:'Cerámica'},
+  {id:'m2',name:'Doña Lupita',lat:19.441,lng:-99.12,cat:'Textil'},
+  {id:'m3',name:'La Abuela',lat:19.422,lng:-99.14,cat:'Gastronomía'},
+];
+
+sellers.forEach(s=>{
+  L.marker([s.lat,s.lng]).addTo(map).bindPopup(`<b>${s.name}</b><br>${s.cat}<br><a href="vendedor.html?id=${s.id}" class="text-blue-500">Ver perfil</a>`);
+});
+</script>
+</body>
+</html>

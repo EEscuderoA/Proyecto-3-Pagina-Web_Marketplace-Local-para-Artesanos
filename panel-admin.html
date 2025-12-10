@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Panel Admin</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-700 text-gray-100 p-8 font-sans">
+
+<!-- Título -->
+<h1 class="text-4xl font-extrabold mb-10 text-emerald-300 drop-shadow-lg text-center">
+  🛠️ Panel de Administración
+</h1>
+
+<!-- Grid general -->
+<div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
+
+  <!-- Tarjeta 1 -->
+  <div id="cardPendientes"
+    class="bg-gray-800 bg-opacity-90 p-6 rounded-2xl border border-gray-700 shadow hover:shadow-xl transition cursor-pointer">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl">🧾</span>
+      <h3 class="font-bold text-lg tracking-wide text-gray-100">Vendedores Pendientes</h3>
+    </div>
+
+    <p id="pendCount" class="text-gray-300 mt-3 text-lg">0 pendientes</p>
+
+    <button id="approve"
+      class="mt-5 w-full bg-gradient-to-r from-emerald-500 to-emerald-600 py-2.5 rounded-xl text-white font-semibold hover:scale-105 transition">
+      Aprobar todo
+    </button>
+  </div>
+
+  <!-- Tarjeta 2 -->
+  <div id="cardReportes"
+    class="bg-gray-800 bg-opacity-90 p-6 rounded-2xl border border-gray-700 shadow hover:shadow-xl transition cursor-pointer">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl">⚠️</span>
+      <h3 class="font-bold text-lg tracking-wide text-gray-100">Productos Reportados</h3>
+    </div>
+
+    <p id="reports" class="text-gray-300 mt-3 text-lg">0 reportes</p>
+
+    <button
+      class="mt-5 w-full bg-gradient-to-r from-emerald-500 to-emerald-600 py-2.5 rounded-xl text-white font-semibold hover:scale-105 transition">
+      Ver reportes
+    </button>
+  </div>
+
+  <!-- Tarjeta 3 -->
+  <div id="cardStats"
+    class="bg-gray-800 bg-opacity-90 p-6 rounded-2xl border border-gray-700 shadow hover:shadow-xl transition cursor-pointer">
+    <div class="flex items-center gap-3">
+      <span class="text-3xl">📊</span>
+      <h3 class="font-bold text-lg tracking-wide text-gray-100">Estadísticas</h3>
+    </div>
+
+    <p id="stats" class="text-gray-300 mt-3 text-lg">--</p>
+
+    <button
+      class="mt-5 w-full bg-gradient-to-r from-emerald-500 to-emerald-600 py-2.5 rounded-xl text-white font-semibold hover:scale-105 transition">
+    Ver detalles
+    </button>
+  </div>
+
+</div>
+
+<!-- CONTENEDOR DE APARTADOS -->
+<div id="panelContent"
+     class="max-w-4xl mx-auto mt-10 p-6 bg-gray-900 bg-opacity-70 border border-gray-700 rounded-2xl shadow-xl hidden">
+</div>
+
+<!-- Script admin -->
+<script>
+function refresh(){
+  const pend = JSON.parse(localStorage.getItem('pending_sellers') || '[]');
+  document.getElementById('pendCount').textContent = pend.length + ' pendientes';
+
+  const cart = JSON.parse(localStorage.getItem('cart_v1') || '{}');
+  document.getElementById('stats').textContent =
+    Object.keys(cart).length + ' carritos con productos (sim)';
+
+  document.getElementById('reports').textContent = '3 reportes (sim)';
+}
+
+// Función para abrir panel
+function openSection(title, contentHTML){
+  const panel = document.getElementById("panelContent");
+  panel.innerHTML = `
+    <h2 class="text-2xl font-bold text-emerald-300 mb-4">${title}</h2>
+    <div class="text-gray-200 space-y-4">${contentHTML}</div>
+  `;
+  panel.classList.remove("hidden");
+}
+
+// Ejemplos
+const ejemploPendientes = `
+  <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+    <p class="font-semibold text-emerald-300">• María Hernández</p>
+    <p class="text-sm text-gray-400">Solicitud enviada: 12 Ene 2025</p>
+  </div>
+
+  <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+    <p class="font-semibold text-emerald-300">• Artesanías López</p>
+    <p class="text-sm text-gray-400">Solicitud enviada: 10 Ene 2025</p>
+  </div>
+
+  <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+    <p class="font-semibold text-emerald-300">• Creaciones Ana</p>
+    <p class="text-sm text-gray-400">Solicitud enviada: 8 Ene 2025</p>
+  </div>
+`;
+
+const ejemploReportes = `
+  <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+    <p class="font-semibold text-red-400">Producto: Taza artesanal azul</p>
+    <p class="text-sm text-gray-400">Motivo: Imagen engañosa</p>
+    <p class="text-xs text-gray-500">Reportado por: Usuario123</p>
+  </div>
+
+  <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+    <p class="font-semibold text-red-400">Producto: Dulces regionales</p>
+    <p class="text-sm text-gray-400">Motivo: Producto en mal estado</p>
+    <p class="text-xs text-gray-500">Reportado por: MartaG</p>
+  </div>
+
+  <div class="bg-gray-800 p-4 rounded-xl border border-gray-700">
+    <p class="font-semibold text-red-400">Producto: Bolsa tejida</p>
+    <p class="text-sm text-gray-400">Motivo: Precio inflado</p>
+    <p class="text-xs text-gray-500">Reportado por: LuisMX</p>
+  </div>
+`;
+
+const ejemploStats = `
+  <p class="text-lg">📦 <span class="text-emerald-300 font-semibold">45</span> productos totales</p>
+  <p class="text-lg">🛍️ <span class="text-emerald-300 font-semibold">120</span> compras realizadas</p>
+  <p class="text-lg">👤 <span class="text-emerald-300 font-semibold">87</span> vendedores activos</p>
+  <p class="text-lg">🌿 <span class="text-emerald-300 font-semibold">15</span> nuevas cuentas esta semana</p>
+`;
+
+// Eventos
+document.getElementById("cardPendientes").onclick = () => {
+  openSection("Vendedores Pendientes", ejemploPendientes);
+};
+
+document.getElementById("cardReportes").onclick = () => {
+  openSection("Productos Reportados", ejemploReportes);
+};
+
+document.getElementById("cardStats").onclick = () => {
+  openSection("Estadísticas del Sistema", ejemploStats);
+};
+
+document.getElementById('approve').onclick = () => {
+  localStorage.removeItem('pending_sellers');
+  refresh();
+};
+
+refresh();
+</script>
+
+</body>
+</html>

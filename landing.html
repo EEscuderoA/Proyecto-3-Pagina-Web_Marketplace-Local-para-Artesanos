@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Marketplace Artesanal — Acceso</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-gray-900">
+
+<!-- Fondo full-screen -->
+<!-- <section class="relative min-h-screen bg-cover bg-center" style="background-image:url('https://picsum.photos/1600/900?grayscale&blur=2');"> -->
+  <div class="absolute inset-0 bg-gradient-to-br from-black/60 via-emerald-900/40 to-black/60 backdrop-blur-sm"></div>
+
+  <div class="relative z-10 max-w-6xl mx-auto px-6 py-24 flex flex-col items-center justify-center text-center text-white">
+    <h1 class="text-5xl md:text-6xl font-extrabold mb-4 drop-shadow-lg">Marketplace Local para Artesanos</h1>
+    <p class="text-lg text-gray-200 max-w-2xl mb-8">Compra productos auténticos de tu región — conoce a los artesanos, visita sus talleres y apoya la economía local.</p>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-2xl">
+      <button onclick="openLogin('cliente')" class="py-4 px-6 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition transform hover:-translate-y-1">
+        <div class="text-xl font-semibold">Cliente</div>
+        <div class="text-sm text-gray-200 mt-1">Explorar catálogo / Comprar</div>
+      </button>
+
+      <button onclick="openLogin('vendedor')" class="py-4 px-6 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition transform hover:-translate-y-1">
+        <div class="text-xl font-semibold">Vendedor / Artesano</div>
+        <div class="text-sm text-gray-200 mt-1">Administrar perfil y catálogo</div>
+      </button>
+
+      <button onclick="openLogin('admin')" class="py-4 px-6 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition transform hover:-translate-y-1">
+        <div class="text-xl font-semibold">Administrador</div>
+        <div class="text-sm text-gray-200 mt-1">Moderación & estadísticas</div>
+      </button>
+    </div>
+
+  </div>
+</section>
+
+<script>
+function openLogin(role){
+  // Save chosen role for convenience (optional)
+  localStorage.setItem('selected_role_demo','' + role);
+  if(role === 'cliente') location.href = 'login-cliente.html';
+  else if(role === 'vendedor') location.href = 'login-vendedor.html';
+  else location.href = 'login-admin.html';
+}
+</script>
+</body>
+</html>

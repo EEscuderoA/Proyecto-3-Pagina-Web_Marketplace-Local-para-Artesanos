@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Carrito · ArtesanosMX</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-800 text-gray-100">
+
+<main class="max-w-6xl mx-auto p-6 mt-12">
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+    <div class="lg:col-span-2 bg-gray-800 bg-opacity-90 p-6 rounded-2xl shadow-xl border border-gray-700">
+      <h2 class="text-2xl font-bold text-emerald-300 mb-6">🛒 Tu Carrito</h2>
+
+      <div id="items" class="space-y-6"></div>
+      <p id="empty" class="text-gray-300">Tu carrito está vacío.</p>
+    </div>
+
+    <aside class="bg-gray-800 bg-opacity-90 p-6 rounded-lg shadow-xl border border-gray-700">
+      <h3 class="text-lg font-semibold text-emerald-300 mb-4">Resumen</h3>
+
+      <div class="flex justify-between text-gray-300 mb-2">
+        <span>Subtotal</span><span id="subtotal">Rp 0</span>
+      </div>
+
+      <div class="flex justify-between text-gray-300 mb-2">
+        <span>Envío</span><span id="shipping">Rp 0</span>
+      </div>
+
+      <hr class="my-4 border-gray-700">
+
+      <div class="flex justify-between font-bold text-lg text-emerald-300">
+        <span>Total</span><span id="total">Rp 0</span>
+      </div>
+
+      <button id="checkout" class="w-full mt-6 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-2 rounded-md hover:scale-105 transition">
+        Realizar pedido (simulado)
+      </button>
+    </aside>
+
+  </div>
+</main>
+
+<script>
+function format(n){ return 'Rp ' + Number(n).toLocaleString(); }
+function getCart(){ return JSON.parse(localStorage.getItem('cart_v1')||'{}'); }
+function setCart(c){ localStorage.setItem('cart_v1', JSON.stringify(c)); render(); }
+
+function render(){
+  const itemsEl = document.getElementById('items');
+  const empty = document.getElementById('empty');
+
+  itemsEl.innerHTML='';
+  const cart = getCart();
+  const keys = Object.keys(cart);
+
+  if(keys.length===0){ empty.style.display='block'; }
+  else empty.style.display='none';
+
+  let subtotal = 0;
+
+  keys.forEach(id=>{
+    const it = cart[id];
+    subtotal += it.price * it.qty;
+
+    const div = document.createElement('div');
+    div.className='flex gap-4 items-center border-b border-gray-700 pb-4';
+
+    div.innerHTML = `
+      <img src="${it.img}" class="w-20 h-20 object-cover rounded">
+      <div class="flex-1">
+        <h4 class="font-semibold">${it.title}</h4>
+
+        <div class="flex items-center gap-2 mt-2">
+          <button data-id="${id}" data-act="dec" class="px-3 py-1 bg-gray-700 rounded">-</button>
+
+          <span class="px-3">${it.qty}</span>
+
+          <button data-id="${id}" data-act="inc" class="px-3 py-1 bg-gray-700 rounded">+</button>
+
+          <span class="ml-auto font-semibold text-emerald-300">${format(it.price * it.qty)}</span>
+        </div>
+
+        <button data-id="${id}" class="text-red-400 text-sm mt-3">Eliminar</button>
+      </div>
+    `;
+    itemsEl.appendChild(div);
+  });
+
+  document.getElementById('subtotal').textContent = format(subtotal);
+  const shipping = subtotal>0 ? 0 : 0;
+  document.getElementById('shipping').textContent = format(shipping);
+  document.getElementById('total').textContent = format(subtotal + shipping);
+
+  // botones + y -
+  itemsEl.querySelectorAll('button[data-act]').forEach(b=>{
+    b.onclick=()=>{
+      const id=b.dataset.id;
+      const act=b.dataset.act;
+      const cart=getCart();
+      if(act==='inc') cart[id].qty++;
+      else if(act==='dec' && cart[id].qty>1) cart[id].qty--;
+      setCart(cart);
+    };
+  });
+
+  // botón eliminar
+  itemsEl.querySelectorAll('button[data-id]:not([data-act])').forEach(b=>{
+    b.onclick=()=>{
+      const id=b.dataset.id;
+      const cart=getCart();
+      delete cart[id];
+      setCart(cart);
+    };
+  });
+}
+
+document.getElementById('checkout').onclick = ()=>{
+  alert('Pedido simulado: se ha registrado el pedido.');
+  localStorage.removeItem('cart_v1');
+  render();
+};
+
+render();
+</script>
+
+</body>
+</html>
