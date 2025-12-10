@@ -3,47 +3,131 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Marketplace Artesanal — Acceso</title>
+<title>ArtesanosMX · Catálogo</title>
 <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen bg-gray-900">
 
-<!-- Fondo full-screen -->
-<!-- <section class="relative min-h-screen bg-cover bg-center" style="background-image:url('https://picsum.photos/1600/900?grayscale&blur=2');"> -->
-  <div class="absolute inset-0 bg-gradient-to-br from-black/60 via-emerald-900/40 to-black/60 backdrop-blur-sm"></div>
+<body class="min-h-screen bg-gradient-to-br from-gray-900 via-green-900 to-emerald-800 text-gray-100 font-sans">
 
-  <div class="relative z-10 max-w-6xl mx-auto px-6 py-24 flex flex-col items-center justify-center text-center text-white">
-    <h1 class="text-5xl md:text-6xl font-extrabold mb-4 drop-shadow-lg">Marketplace Local para Artesanos</h1>
-    <p class="text-lg text-gray-200 max-w-2xl mb-8">Compra productos auténticos de tu región — conoce a los artesanos, visita sus talleres y apoya la economía local.</p>
+<nav class="bg-gray-800 bg-opacity-90 sticky top-0 z-50 border-b border-gray-700">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
 
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-2xl">
-      <button onclick="openLogin('cliente')" class="py-4 px-6 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition transform hover:-translate-y-1">
-        <div class="text-xl font-semibold">Cliente</div>
-        <div class="text-sm text-gray-200 mt-1">Explorar catálogo / Comprar</div>
-      </button>
+    <!-- Logo -->
+    <div class="flex items-center gap-4">
+      <h1 class="text-2xl font-bold text-emerald-300 tracking-wide">🌿 ArtesanosMX</h1>
+    </div>
 
-      <button onclick="openLogin('vendedor')" class="py-4 px-6 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition transform hover:-translate-y-1">
-        <div class="text-xl font-semibold">Vendedor / Artesano</div>
-        <div class="text-sm text-gray-200 mt-1">Administrar perfil y catálogo</div>
-      </button>
+    <span id="userBadge" class="text-sm text-gray-300 hidden"></span>
 
-      <button onclick="openLogin('admin')" class="py-4 px-6 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition transform hover:-translate-y-1">
-        <div class="text-xl font-semibold">Administrador</div>
-        <div class="text-sm text-gray-200 mt-1">Moderación & estadísticas</div>
-      </button>
+    <!-- Mapa + Carrito juntos a la derecha -->
+    <div class="flex items-center gap-6">
+
+      <!-- Botón MAPA (ahora junto al carro, pero con espacio) -->
+      <a href="mapa.html" class="flex flex-col items-center leading-tight hover:text-emerald-300 transition mr-2">
+        <span class="text-2xl">🌍</span>
+        <span class="text-xs text-gray-300 font-medium tracking-wide">Mapa</span>
+      </a>
+
+      <!-- Carrito -->
+      <a href="carrito.html" class="relative text-xl text-gray-200 hover:text-emerald-300 transition">
+        🛒
+        <span id="cartCount" class="absolute -top-2 -right-3 bg-emerald-500 text-white px-2 py-0.5 text-xs rounded-full shadow">
+          0
+        </span>
+      </a>
+
     </div>
 
   </div>
-</section>
+</nav>
+
+
+<header class="relative bg-cover bg-center text-white py-20 text-center" style="background-image:url('https://picsum.photos/1200/500?blur=2');">
+  <div class="absolute inset-0 bg-black bg-opacity-40"></div>
+  <div class="relative z-10">
+    <h2 class="text-4xl md:text-5xl font-extrabold text-emerald-300 drop-shadow-lg">Artesanía Local, Talento Real</h2>
+    <p class="mt-3 text-lg opacity-90">Descubre productos auténticos y apoya a los creadores de tu zona.</p>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-6 py-12">
+  <div class="flex items-center justify-between mb-6">
+    <h3 class="text-2xl font-semibold">Catálogo</h3>
+    <div class="flex items-center gap-3">
+      <select id="filterCat" class="bg-gray-800 border border-gray-700 px-3 py-2 rounded text-gray-200">
+        <option value="">Todas las categorías</option>
+        <option value="Cerámica">Cerámica</option>
+        <option value="Textil">Textil</option>
+        <option value="Gastronomía">Gastronomía</option>
+      </select>
+      <input id="q" placeholder="Buscar..." class="px-3 py-2 rounded bg-gray-800 border border-gray-700 text-gray-200" />
+    </div>
+  </div>
+
+  <section id="grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+  </section>
+</main>
+
+<footer class="py-8 text-center text-gray-400">© 2025 ArtesanosMX</footer>
 
 <script>
-function openLogin(role){
-  // Save chosen role for convenience (optional)
-  localStorage.setItem('selected_role_demo','' + role);
-  if(role === 'cliente') location.href = 'login-cliente.html';
-  else if(role === 'vendedor') location.href = 'login-vendedor.html';
-  else location.href = 'login-admin.html';
+const products = [
+  {id:'p1', title:'Jarra de Barro', price:350, category:'Cerámica', vendor:'Don Mauro', img:'img/jarrabarro.jpg'},
+  {id:'p2', title:'Taza Pintada', price:220, category:'Cerámica', vendor:'Doña Lupita', img:'img/tasapintada.jpg'},
+  {id:'p3', title:'Bolsa Tejida', price:450, category:'Textil', vendor:'Doña Carmen', img:'img/bolsatejida.jpg'},
+  {id:'p4', title:'Dulces Regionales', price:120, category:'Gastronomía', vendor:'La Abuela', img:'img/dulcesregionales.jpeg'},
+];
+
+function renderGrid(list){
+  const grid = document.getElementById('grid'); 
+  grid.innerHTML='';
+  list.forEach(p=>{
+    const el = document.createElement('article');
+    el.className = 'bg-gray-800 bg-opacity-90 rounded-xl shadow-md overflow-hidden border border-gray-700 p-4 flex flex-col hover:shadow-xl transition';
+    el.innerHTML = `
+      <img src="${p.img}" class="w-full h-44 object-cover rounded-lg">
+      <h4 class="mt-3 font-bold text-gray-100">${p.title}</h4>
+      <p class="text-sm text-gray-400">${p.vendor} · ${p.category}</p>
+      <div class="mt-2 flex items-center gap-3">
+        <div class="text-emerald-300 font-semibold">Rp ${p.price}</div>
+        <button data-id="${p.id}" class="ml-auto bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-3 py-1 rounded hover:scale-105 transition addBtn">Añadir</button>
+      </div>
+    `;
+    grid.appendChild(el);
+  });
+  attachAdd();
 }
+
+function getCart(){ return JSON.parse(localStorage.getItem('cart_v1')||'{}'); }
+function setCart(c){ localStorage.setItem('cart_v1', JSON.stringify(c)); updateCount(); }
+function updateCount(){ const total = Object.values(getCart()).reduce((s,i)=>s+i.qty,0); document.getElementById('cartCount').textContent = total; }
+
+function attachAdd(){ 
+  document.querySelectorAll('.addBtn').forEach(b=>{
+    b.onclick=()=>{
+      const id=b.dataset.id; 
+      const cart=getCart(); 
+      const p=products.find(x=>x.id===id);
+      if(cart[id]) cart[id].qty++;
+      else cart[id]={id, title:p.title, price:p.price, qty:1, img:p.img};
+      setCart(cart);
+      alert(`${p.title} añadido (sim)`);
+    };
+  });
+}
+
+document.getElementById('filterCat').onchange = applyFilters;
+document.getElementById('q').oninput = applyFilters;
+
+function applyFilters(){
+  const cat = document.getElementById('filterCat').value.toLowerCase();
+  const q = document.getElementById('q').value.toLowerCase();
+  const list = products.filter(p=> (!cat || p.category.toLowerCase()===cat) && (p.title.toLowerCase().includes(q) || p.vendor.toLowerCase().includes(q)));
+  renderGrid(list);
+}
+
+renderGrid(products);
+updateCount();
 </script>
 </body>
 </html>
